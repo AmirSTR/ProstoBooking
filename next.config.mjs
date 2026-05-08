@@ -1,4 +1,5 @@
 const config = {
+  output: "standalone",  // добавить это
   typescript: {
     ignoreBuildErrors: true,
   },
