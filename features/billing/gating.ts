@@ -39,30 +39,43 @@ export async function getPremiumGateForBusiness(
       .neq("status", "cancelled"),
   ]);
 
-  const trialStart = business?.created_at ? new Date(business.created_at) : now;
-  const defaultTrialEndsAt = addDays(trialStart, SUBSCRIPTION_PRICE.trialDays).toISOString();
-  const trialEndsAt = subscription?.trial_ends_at ?? defaultTrialEndsAt;
-  const isTrialing =
-    subscription?.status === "trialing" || new Date(trialEndsAt).getTime() > now.getTime();
-  const isActive =
-    subscription?.status === "active" &&
-    (!subscription.current_period_ends_at ||
-      new Date(subscription.current_period_ends_at).getTime() > now.getTime());
-  const weeklyBookingCount = count ?? 0;
-  const remainingWeeklyBookings = Math.max(
-    SUBSCRIPTION_PRICE.weeklyFreeBookingLimit - weeklyBookingCount,
-    0,
-  );
+  const trialStart = (business as any)?.created_at
+  ? new Date((business as any).created_at)
+  : now;
 
+const defaultTrialEndsAt = addDays(
+  trialStart,
+  SUBSCRIPTION_PRICE.trialDays,
+).toISOString();
+
+const trialEndsAt =
+  (subscription as any)?.trial_ends_at ?? defaultTrialEndsAt;
+
+const isTrialing =
+  (subscription as any)?.status === "trialing" ||
+  new Date(trialEndsAt).getTime() > now.getTime();
+
+const isActive =
+  (subscription as any)?.status === "active" &&
+  (!(subscription as any)?.current_period_ends_at ||
+    new Date((subscription as any).current_period_ends_at).getTime() > now.getTime());
+const weeklyBookingCount = count ?? 0;
+
+const weeklyBookingLimit = SUBSCRIPTION_PRICE.weeklyFreeBookingLimit;
+
+const remainingWeeklyBookings = Math.max(
+  weeklyBookingLimit - weeklyBookingCount,
+  0
+);
   return {
-    isPremium: isActive || isTrialing,
-    isTrialing,
-    trialEndsAt,
-    weeklyBookingCount,
-    weeklyBookingLimit: SUBSCRIPTION_PRICE.weeklyFreeBookingLimit,
-    remainingWeeklyBookings,
-    reason: isActive ? "active" : isTrialing ? "trialing" : "limited",
-  };
+  isPremium: isActive || isTrialing,
+  isTrialing,
+  trialEndsAt,
+  weeklyBookingCount,
+  weeklyBookingLimit,
+  remainingWeeklyBookings,
+  reason: isActive ? "active" : isTrialing ? "trialing" : "limited",
+};
 }
 
 export function canCreateBooking(gate: PremiumGate) {
