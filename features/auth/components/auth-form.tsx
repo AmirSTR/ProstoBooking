@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useFormState, useFormStatus } from 'react-dom';
 import Link from "next/link";
 
 import { PageSurface } from "@/components/layout/page-surface";
@@ -18,10 +18,11 @@ type AuthFormProps = {
 
 export function AuthForm({ mode }: AuthFormProps) {
   const isSignUp = mode === "sign-up";
-  const [state, action, isPending] = useActionState(
+  const [state, action] = useFormState(
     isSignUp ? signUpAction : signInAction,
     initialState,
   );
+  const { pending: isPending } = useFormStatus();
 
   return (
     <main className="grid min-h-dvh place-items-center bg-background px-4 py-8 text-foreground safe-bottom safe-top">

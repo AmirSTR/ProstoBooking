@@ -14,17 +14,13 @@ export async function getOwnedBusinessForCurrentUser() {
     redirect("/sign-in");
   }
 
-  const { data, error } = await supabase
-    .from("business_members")
-    .select("businesses(id,name,slug),role")
-    .eq("profile_id", user.id)
-    .in("role", ["owner", "admin"])
-    .limit(1)
-    .single()
-    .returns<{
-      role: "owner" | "admin";
-      businesses: { id: string; name: string; slug: string } | null;
-    }>();
+ const { data, error } = await supabase
+  .from("business_members")
+  .select("businesses(id,name,slug),role")
+  .eq("profile_id", user.id)
+  .in("role", ["owner", "admin"])
+  .limit(1)
+  .single() as any;
 
   if (error || !(data as any)?.businesses) {
     throw new Error("Only business owners and admins can manage subscriptions.");
