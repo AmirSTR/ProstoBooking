@@ -26,12 +26,12 @@ export async function getOwnedBusinessForCurrentUser() {
       businesses: { id: string; name: string; slug: string } | null;
     }>();
 
-  if (error || !data.businesses) {
+  if (error || !(data as any)?.businesses) {
     throw new Error("Only business owners and admins can manage subscriptions.");
   }
 
   return {
-    ...data.businesses,
+    ...(data as any)?.businesses,
     ownerEmail: user.email,
   };
 }
