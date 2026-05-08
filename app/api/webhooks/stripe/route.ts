@@ -71,8 +71,8 @@ export async function POST(request: Request) {
             : subscription.customer.id,
         providerSubscriptionId: subscription.id,
         status,
-        currentPeriodEndsAt: subscription.current_period_end
-          ? new Date(subscription.current_period_end * 1000).toISOString()
+        currentPeriodEndsAt: (subscription as any).current_period_end
+          ? new Date((subscription as any).current_period_end * 1000).toISOString()
           : null,
         cancelAtPeriodEnd: subscription.cancel_at_period_end,
       });
