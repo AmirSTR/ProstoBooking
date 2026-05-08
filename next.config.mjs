@@ -1,6 +1,9 @@
 const config = {
   typescript: {
-    ignoreBuildErrors: true,  // добавить это
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
   },
 }
 

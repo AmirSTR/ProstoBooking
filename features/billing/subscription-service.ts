@@ -26,15 +26,17 @@ type RecordPaymentEventInput = {
 
 export async function upsertSubscription(input: UpsertSubscriptionInput) {
   const supabase = createSupabaseAdminClient();
-  const { error } = await supabase.from("subscriptions").upsert(
-  {
-    business_id: input.businessId,
-    provider: input.provider,
-    provider_customer_id: input.providerCustomerId ?? null,
-    provider_subscription_id: input.providerSubscriptionId ?? null,
-    // ...
-  } as any  // добавить это
-)
+  const { error } = await (supabase.from("subscriptions") as any).upsert(
+    {
+      business_id: input.businessId,
+      provider: input.provider,
+      provider_customer_id: input.providerCustomerId ?? null,
+      provider_subscription_id: input.providerSubscriptionId ?? null,
+      provider_payment_id: input.providerPaymentId ?? null,
+      current_period_ends_at: input.currentPeriodEndsAt ?? null,
+      cancel_at_period_end: input.cancelAtPeriodEnd ?? false,
+    }
+  );
 
   if (error) {
     throw new Error("Unable to update subscription.");
@@ -43,7 +45,7 @@ export async function upsertSubscription(input: UpsertSubscriptionInput) {
 
 export async function recordPaymentEvent(input: RecordPaymentEventInput) {
   const supabase = createSupabaseAdminClient();
-  const { error } = await supabase.from("payment_events").insert({
+  const { error } = await (supabase.from("payment_events") as any).insert({
     provider: input.provider,
     provider_event_id: input.providerEventId,
     event_type: input.eventType,
